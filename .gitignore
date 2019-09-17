@@ -1,2 +1,7 @@
 models/yolov3.h5
 models/yolov3.weights
+
+.DS_Store
+output/*
+input/*
+models/*
