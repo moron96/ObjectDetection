@@ -27,26 +27,38 @@ detector.loadModel()
 
 
 camera = cv2.VideoCapture(1)
-i = 0;
-start = time.time()
 while True:
     return_value, image = camera.read()
-    if image is not None:
-        cv2.imwrite(input_path, image)
-        detection = detector.detectObjectsFromImage(input_image=input_path,
-                                                    output_image_path="./output/processed"+str(i)+".jpg")
-        # videodetection = videodetector.detectObjectsFromVideo(camera_input=camera,
-        #                                                       save_detected_video=False,
-        #                                                       frames_per_second=60,
-        #                                                       frame_detection_interval=1,
-        #                                                       return_detected_frame=True,
-        #                                                       per_frame_function=perframe)
-        if i-2 > 0:
-            img_file = r"./output/processed"+str(i-2)+".jpg"
-            img = cv2.imread(img_file)
-            cv2.imshow('frame', image)
-        i += 1
+    cv2.imwrite(input_path, image)
+    detection = detector.detectObjectsFromImage(input_image=input_path,
+                                                output_image_path=output_path)
+    for eachItem in detection:
+        if eachItem["percentage_probability"] < 60:
+            color = (92, 92, 247)
+        elif eachItem["percentage_probability"] < 85:
+            color = (92, 247, 240)
+        else:
+            color = (129, 207, 104)
+        cv2.rectangle(image,
+                      (eachItem["box_points"][0], eachItem["box_points"][1]),
+                      (eachItem["box_points"][2], eachItem["box_points"][3]),
+                      color,
+                      2)
+        cv2.putText(image,
+                    eachItem["name"] + " : " + str(eachItem["percentage_probability"]),
+                    (eachItem["box_points"][0], eachItem["box_points"][1]-5),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.5,
+                    color,
+                    1,
+                    cv2.LINE_AA)
+        print(eachItem["name"], " : ", eachItem["percentage_probability"])
+    print("\n\n")
 
-        for eachItem in detection:
-            print(eachItem["name"], " : ", eachItem["percentage_probability"])
-            print("\n\n")
+    cv2.imshow("detected", image)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+# When everything done, release the capture
+# camera.release()
+# cv2.destroyAllWindows()
