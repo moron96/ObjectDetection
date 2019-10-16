@@ -22,4 +22,9 @@ camera = cv2.VideoCapture(1) #for secondary camera
 camera = cv2.VideoCapture(0) #for primary camera
 ```
 
-5. Enjoy
+5. Run
+```
+python realtime.py
+```
+
+6. Enjoy
